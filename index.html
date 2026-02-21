@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Password Strength Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #4e73df, #1cc88a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input[type="password"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .strength-bar {
+            height: 8px;
+            width: 100%;
+            background: #ddd;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .strength {
+            height: 100%;
+            width: 0%;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .weak { background: red; }
+        .medium { background: orange; }
+        .strong { background: green; }
+
+        .suggestions {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .percentage {
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .toggle {
+            margin-top: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #007bff;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h2>Password Strength Checker</h2>
+
+    <input type="password" id="password" placeholder="Enter Password" onkeyup="checkStrength()">
+    
+    <div class="toggle" onclick="togglePassword()">Show / Hide Password</div>
+
+    <div class="strength-bar">
+        <div id="strength" class="strength"></div>
+    </div>
+
+    <div id="percentage" class="percentage"></div>
+    <div id="suggestions" class="suggestions"></div>
+</div>
+
+<script>
+function checkStrength() {
+    let password = document.getElementById("password").value;
+    let strengthBar = document.getElementById("strength");
+    let suggestions = document.getElementById("suggestions");
+    let percentage = document.getElementById("percentage");
+
+    let score = 0;
+    let feedback = [];
+
+    let commonPasswords = ["123456", "password", "qwerty", "admin", "12345678"];
+
+    if (commonPasswords.includes(password)) {
+        strengthBar.style.width = "100%";
+        strengthBar.className = "strength weak";
+        percentage.innerHTML = "Very Weak (Common Password)";
+        suggestions.innerHTML = "Avoid using common passwords!";
+        return;
+    }
+
+    if (password.length >= 8) score++;
+    else feedback.push("• Use at least 8 characters");
+
+    if (/[a-z]/.test(password)) score++;
+    else feedback.push("• Add lowercase letter");
+
+    if (/[A-Z]/.test(password)) score++;
+    else feedback.push("• Add uppercase letter");
+
+    if (/[0-9]/.test(password)) score++;
+    else feedback.push("• Add number");
+
+    if (/[@$!%*?&]/.test(password)) score++;
+    else feedback.push("• Add special character");
+
+    let percent = (score / 5) * 100;
+    strengthBar.style.width = percent + "%";
+
+    if (score <= 2) {
+        strengthBar.className = "strength weak";
+        percentage.innerHTML = "Weak Password (" + percent + "%)";
+    } 
+    else if (score === 3 || score === 4) {
+        strengthBar.className = "strength medium";
+        percentage.innerHTML = "Medium Password (" + percent + "%)";
+    } 
+    else {
+        strengthBar.className = "strength strong";
+        percentage.innerHTML = "Strong Password (" + percent + "%)";
+    }
+
+    suggestions.innerHTML = feedback.join("<br>");
+}
+
+function togglePassword() {
+    let passwordField = document.getElementById("password");
+    passwordField.type = passwordField.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>
